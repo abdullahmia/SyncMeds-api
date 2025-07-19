@@ -8,7 +8,7 @@
     "docker:prod:start": "docker compose -p syncmeds-api -f docker/docker-compose.yml up -d",
     "docker:prod:stop": "docker compose -f docker/docker-compose.dev.yml down",
     "docker:dev:start": "docker compose -p syncmeds-api -f docker/docker-compose.dev.yml up -d",
-    "docker:dev:stop": "docker compose -f docker/docker-compose.dev.yml down",
+    "docker:dev:stop": "docker compose -p syncmeds-api -f docker/docker-compose.dev.yml down",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:migrate:deploy": "prisma migrate deploy",
