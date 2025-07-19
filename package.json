@@ -15,7 +15,7 @@
     "prisma:studio": "prisma studio",
     "prisma:reset": "prisma migrate reset",
     "prisma:status": "prisma migrate status",
-    "prisma:seed": "ts-node prisma/seed.ts"
+    "prisma:seed": "ts-node src/core/database/seed.ts"
   },
   "keywords": [],
   "author": "Abdullah Mia",
@@ -28,8 +28,11 @@
     "dotenv": "^17.2.0",
     "express": "^5.1.0",
     "helmet": "^8.1.0",
+    "http-status": "^2.1.0",
     "joi": "^17.13.3",
-    "morgan": "^1.10.1"
+    "morgan": "^1.10.1",
+    "winston": "^3.17.0",
+    "winston-daily-rotate-file": "^5.0.0"
   },
   "devDependencies": {
     "@types/compression": "^1.8.1",

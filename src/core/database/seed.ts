@@ -5,7 +5,7 @@ import {
   PaymentMethod,
   PaymentStatus,
   PrismaClient,
-} from "../src/generated/prisma";
+} from "../../generated/prisma";
 
 const prisma = new PrismaClient();
 
