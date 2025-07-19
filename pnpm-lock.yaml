@@ -8,6 +8,9 @@ dependencies:
   '@prisma/client':
     specifier: 6.12.0
     version: 6.12.0(prisma@6.12.0)(typescript@5.8.3)
+  bcryptjs:
+    specifier: ^3.0.2
+    version: 3.0.2
   compression:
     specifier: ^1.8.1
     version: 1.8.1
@@ -64,6 +67,9 @@ devDependencies:
   typescript:
     specifier: ^5.8.3
     version: 5.8.3
+  ulid:
+    specifier: ^3.0.1
+    version: 3.0.1
 
 packages:
 
@@ -320,6 +326,11 @@ packages:
     engines: {node: '>= 0.8'}
     dependencies:
       safe-buffer: 5.1.2
+    dev: false
+
+  /bcryptjs@3.0.2:
+    resolution: {integrity: sha512-k38b3XOZKv60C4E2hVsXTolJWfkGRMbILBIe2IBITXciy5bOsTKot5kDrf3ZfufQtQOUN5mXceUEpU1rTl9Uog==}
+    hasBin: true
     dev: false
 
   /binary-extensions@2.3.0:
@@ -1287,6 +1298,11 @@ packages:
     resolution: {integrity: sha512-p1diW6TqL9L07nNxvRMM7hMMw4c5XOo/1ibL4aAIGmSAt9slTE1Xgw5KWuof2uTOvCg9BY7ZRi+GaF+7sfgPeQ==}
     engines: {node: '>=14.17'}
     hasBin: true
+
+  /ulid@3.0.1:
+    resolution: {integrity: sha512-dPJyqPzx8preQhqq24bBG1YNkvigm87K8kVEHCD+ruZg24t6IFEFv00xMWfxcC4djmFtiTLdFuADn4+DOz6R7Q==}
+    hasBin: true
+    dev: true
 
   /undefsafe@2.0.5:
     resolution: {integrity: sha512-WxONCrssBM8TSPRqN5EmsjVrsv4A8X12J4ArBiiayv3DyyG3ZlIg6yysuuSYdZsVz3TKcTg2fd//Ujd4CHV1iA==}
