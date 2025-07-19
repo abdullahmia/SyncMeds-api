@@ -9,7 +9,7 @@ import {
   errorConverter,
   errorHandler,
 } from "./core/middleware/error.middleware";
-import { ApiError } from "./shared/utils/api-error";
+import { ApiError } from "./shared/utils/api-error.util";
 
 dotenv.config();
 

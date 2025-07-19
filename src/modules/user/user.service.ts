@@ -8,3 +8,5 @@ export class UserService {
     return await userRepository.getUsers();
   }
 }
+
+export default new UserService();

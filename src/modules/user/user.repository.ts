@@ -1,7 +1,7 @@
 import { prisma } from "@/core/database/prisma.client";
 import { PublicUser } from "./user.types";
 
-class UserRepository {
+export class UserRepository {
   constructor() {}
 
   async getUsers(): Promise<PublicUser[]> {

@@ -1,6 +1,6 @@
 import config from "@/config";
 import { Prisma } from "@/generated/prisma";
-import { ApiError } from "@/shared/utils/api-error";
+import { ApiError } from "@/shared/utils/api-error.util";
 import { logger } from "@/shared/utils/logger.util";
 import { NextFunction, Request, Response } from "express";
 import httpStatus from "http-status";
