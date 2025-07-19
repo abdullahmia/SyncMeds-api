@@ -72,3 +72,4 @@ out/
 *.patch
 *.bak
 *.orig
+/src/generated/prisma

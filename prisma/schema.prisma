@@ -1,0 +1,140 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum InventoryStatus {
+  OUT_OF_STOCK
+  LOW_STOCK
+  AVAILABLE
+}
+
+enum PaymentMethod {
+  CASH
+  CARD
+  MOBILE
+  OTHER
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+}
+
+model User {
+  user_id    String     @id @default(uuid())
+  name       String
+  email      String     @unique
+  password   String
+  created_at DateTime   @default(now())
+  updated_at DateTime   @updatedAt
+  Sale       Sale[]
+  Settings   Settings[]
+
+  @@map("users")
+}
+
+model Customer {
+  customer_id String   @id @default(uuid())
+  name        String
+  email       String
+  phone       String
+  address     String
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+  Sale        Sale[]
+
+  @@map("customers")
+}
+
+model Product {
+  product_id            String      @id @default(uuid())
+  product_name          String
+  generic_name          String
+  description           String
+  category              String
+  manufacturer          String
+  sku                   String
+  selling_price         Decimal
+  cost_price            Decimal
+  required_prescription Boolean
+  track_exprires        Boolean
+  created_at            DateTime    @default(now())
+  updated_at            DateTime    @updatedAt
+  Inventory             Inventory[]
+  SaleItem              SaleItem[]
+
+  @@map("products")
+}
+
+model Inventory {
+  inventory_id  String          @id @default(ulid())
+  product       Product         @relation(fields: [product_id], references: [product_id])
+  product_id    String
+  batch_number  String
+  quantity      Int
+  location      String
+  reorder_level Int
+  status        InventoryStatus @default(AVAILABLE)
+  created_at    DateTime        @default(now())
+  updated_at    DateTime        @updatedAt
+}
+
+model Sale {
+  sale_id        String        @id @default(ulid())
+  invoice_number String
+  customer       Customer      @relation(fields: [customer_id], references: [customer_id])
+  customer_id    String
+  user           User          @relation(fields: [user_id], references: [user_id])
+  user_id        String
+  sale_date      DateTime      @default(now())
+  total_amount   Decimal
+  payment_method PaymentMethod @default(CASH)
+  payment_status PaymentStatus
+  notes          String
+  created_at     DateTime      @default(now())
+  updated_at     DateTime      @updatedAt
+  SaleItem       SaleItem[]
+
+  @@map("sales")
+}
+
+model SaleItem {
+  sale_item_id  String   @id @default(ulid())
+  sale          Sale     @relation(fields: [sale_id], references: [sale_id])
+  sale_id       String
+  product       Product  @relation(fields: [product_id], references: [product_id])
+  product_id    String
+  quantity_sold Int
+  unit_price    Decimal
+  total_item    Int
+  created_at    DateTime @default(now())
+
+  @@map("sale_item")
+}
+
+model Settings {
+  settings_id           String   @id @default(ulid())
+  pharmacy_name         String
+  business_email        String
+  business_address      String
+  business_phone_number String
+  registration_number   String
+  tax_id                String
+  currency              String
+  currency_symbol       String
+  date_format           String
+  time_zone             String
+  invoice_prefix        String
+  invoice_footer        String
+  payment_terms         String
+  last_updated_by       User     @relation(fields: [last_updated_by_id], references: [user_id])
+  last_updated_by_id    String
+  created_at            DateTime @default(now())
+  updated_at            DateTime @updatedAt
+}
