@@ -1,12 +1,45 @@
-import userRepository from "./user.repository";
-import { PublicUser } from "./user.types";
+import { ApiError } from "@/shared/utils/api-error.util";
+import httpStatus from "http-status";
+import * as userRepository from "./user.repository";
+import { CreateUserPayload, PublicUser, UpdateUserPayload } from "./user.types";
 
-export class UserService {
-  constructor() {}
+export const getUsers = async (): Promise<PublicUser[]> => {
+  return await userRepository.getUsers();
+};
 
-  async getUsers(): Promise<PublicUser[]> {
-    return await userRepository.getUsers();
+export const getUserById = async (id: string): Promise<PublicUser> => {
+  const user = await userRepository.getUserById(id);
+  if (!user) {
+    throw new ApiError(
+      httpStatus.NOT_FOUND,
+      `User not found with this '${id}'`
+    );
   }
-}
 
-export default new UserService();
+  return user;
+};
+
+export const createUser = async (
+  payload: CreateUserPayload
+): Promise<PublicUser> => {
+  const isExistUser = await userRepository.getUserByEmail(payload.email);
+
+  if (isExistUser) {
+    throw new ApiError(httpStatus.CONFLICT, "Already have an user!");
+  }
+
+  return await userRepository.createUser(payload);
+};
+
+export const updateUser = async (
+  userId: string,
+  payload: UpdateUserPayload
+): Promise<PublicUser> => {
+  const user = await userRepository.updateUser(userId, payload);
+  return user;
+};
+
+export const deleteUser = async (id: string): Promise<PublicUser> => {
+  const user = await userRepository.deleteUser(id);
+  return user;
+};

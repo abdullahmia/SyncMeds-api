@@ -1,8 +1,19 @@
+import { validate } from "@/core/middleware/validate.middleware";
 import { Router } from "express";
-import userController from "./user.controller";
+import * as userController from "./user.controller";
+import { createUserSchema, updateUserSchema, userById } from "./user.validator";
 
 const router: Router = Router();
 
-router.get("/", userController.getAllUsers);
+router
+  .route("/")
+  .get(userController.getAllUsers)
+  .post(validate(createUserSchema), userController.createUser);
+
+router
+  .route("/:id")
+  .get(validate(userById), userController.getUserById)
+  .patch(validate(updateUserSchema), userController.updateUserById)
+  .delete(validate(userById), userController.deleteUserById);
 
 export { router as userRouter };

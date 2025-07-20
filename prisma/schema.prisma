@@ -90,8 +90,8 @@ model Sale {
   invoice_number String
   customer       Customer      @relation(fields: [customer_id], references: [customer_id])
   customer_id    String
-  user           User          @relation(fields: [user_id], references: [user_id])
-  user_id        String
+  user           User?         @relation(fields: [user_id], references: [user_id], onDelete: SetDefault)
+  user_id        String?
   sale_date      DateTime      @default(now())
   total_amount   Decimal
   payment_method PaymentMethod @default(CASH)
@@ -133,8 +133,8 @@ model Settings {
   invoice_prefix        String
   invoice_footer        String
   payment_terms         String
-  last_updated_by       User     @relation(fields: [last_updated_by_id], references: [user_id])
-  last_updated_by_id    String
+  last_updated_by       User?    @relation(fields: [last_updated_by_id], references: [user_id], onDelete: SetNull)
+  last_updated_by_id    String?
   created_at            DateTime @default(now())
   updated_at            DateTime @updatedAt
 }
