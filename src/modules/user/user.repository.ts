@@ -1,5 +1,5 @@
 import { db } from "@/core/database/prisma.client";
-import { Prisma } from "@/generated/prisma";
+import { Prisma, User } from "@/generated/prisma";
 import { ApiError } from "@/shared/utils/api-error.util";
 import { CreateUserPayload, PublicUser, UpdateUserPayload } from "./user.types";
 
@@ -35,15 +35,16 @@ export const getUserById = async (id: string): Promise<PublicUser | null> => {
   }
 };
 
-export const getUserByEmail = async (
-  email: string
-): Promise<PublicUser | null> => {
+export const getUserByEmail = async (email: string): Promise<User | null> => {
   try {
     const user = await db.user.findFirst({
       where: {
         email,
       },
-      select: selectUserProperty,
+      select: {
+        ...selectUserProperty,
+        password: true,
+      },
     });
     return user;
   } catch (error) {

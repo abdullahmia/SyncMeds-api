@@ -9,3 +9,8 @@ export type CreateUserPayload = {
 };
 
 export type UpdateUserPayload = Partial<CreateUserPayload>;
+export type UserPayload = {
+  id: string;
+  email: string;
+  name: string;
+};
