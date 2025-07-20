@@ -65,9 +65,6 @@ export const createUser = async (
       if (error.code === "P2002") {
         throw new ApiError(409, "User already exists");
       }
-      if (error.code === "P2025") {
-        throw new ApiError(404, "User not found");
-      }
     }
     throw new ApiError(500, "Failed to create user");
   }
