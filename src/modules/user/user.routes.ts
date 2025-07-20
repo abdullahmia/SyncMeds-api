@@ -9,12 +9,28 @@ const router: Router = Router();
 router
   .route("/")
   .get(AuthMiddleware.authenticateJWT, userController.getAllUsers)
-  .post(validate(createUserSchema), userController.createUser);
+  .post(
+    AuthMiddleware.authenticateJWT,
+    validate(createUserSchema),
+    userController.createUser
+  );
 
 router
   .route("/:id")
-  .get(validate(userById), userController.getUserById)
-  .patch(validate(updateUserSchema), userController.updateUserById)
-  .delete(validate(userById), userController.deleteUserById);
+  .get(
+    AuthMiddleware.authenticateJWT,
+    validate(userById),
+    userController.getUserById
+  )
+  .patch(
+    AuthMiddleware.authenticateJWT,
+    validate(updateUserSchema),
+    userController.updateUserById
+  )
+  .delete(
+    AuthMiddleware.authenticateJWT,
+    validate(userById),
+    userController.deleteUserById
+  );
 
 export { router as userRouter };
