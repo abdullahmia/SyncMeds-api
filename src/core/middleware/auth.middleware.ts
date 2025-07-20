@@ -1,5 +1,8 @@
 import { UserPayload } from "@/modules/user/user.types";
+import { ApiError } from "@/shared/utils/api-error.util";
+import { logger } from "@/shared/utils/logger.util";
 import { NextFunction, Request, Response } from "express";
+import httpStatus from "http-status";
 import passport from "passport";
 
 declare global {
@@ -22,20 +25,17 @@ export class AuthMiddleware {
       { session: false },
       (err: any, user: UserPayload, info: any): void => {
         if (err) {
-          console.error("JWT Authentication error:", err);
-          res.status(500).json({
-            error: "Internal authentication error",
-            message: "Authentication service unavailable",
-          });
-          return;
+          return next(
+            new ApiError(
+              httpStatus.INTERNAL_SERVER_ERROR,
+              "Authentication service unavailable"
+            )
+          );
         }
 
         if (!user) {
-          res.status(401).json({
-            error: "Unauthorized",
-            message: info?.message || "Invalid or expired token",
-          });
-          return;
+          const message = info?.message || "Invalid or expired token";
+          return next(new ApiError(httpStatus.UNAUTHORIZED, message));
         }
 
         req.user = user;
@@ -57,20 +57,18 @@ export class AuthMiddleware {
       { session: false },
       (err: any, user: UserPayload, info: any): void => {
         if (err) {
-          console.error("Local Authentication error:", err);
-          res.status(500).json({
-            error: "Internal authentication error",
-            message: "Authentication service unavailable",
-          });
-          return;
+          logger.error("Local Authentication error:", err);
+          return next(
+            new ApiError(
+              httpStatus.INTERNAL_SERVER_ERROR,
+              "Authentication service unavailable"
+            )
+          );
         }
 
         if (!user) {
-          res.status(401).json({
-            error: "Authentication failed",
-            message: info?.message || "Invalid credentials",
-          });
-          return;
+          const message = info?.message || "Invalid credentials";
+          return next(new ApiError(httpStatus.UNAUTHORIZED, message));
         }
 
         req.user = user;
@@ -92,7 +90,7 @@ export class AuthMiddleware {
       { session: false },
       (err: any, user: UserPayload): void => {
         if (err) {
-          console.error("Optional Auth error:", err);
+          logger.error("Optional Auth error:", err);
         }
 
         if (user) {

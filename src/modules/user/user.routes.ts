@@ -1,3 +1,4 @@
+import { AuthMiddleware } from "@/core/middleware/auth.middleware";
 import { validate } from "@/core/middleware/validate.middleware";
 import { Router } from "express";
 import * as userController from "./user.controller";
@@ -7,7 +8,7 @@ const router: Router = Router();
 
 router
   .route("/")
-  .get(userController.getAllUsers)
+  .get(AuthMiddleware.authenticateJWT, userController.getAllUsers)
   .post(validate(createUserSchema), userController.createUser);
 
 router

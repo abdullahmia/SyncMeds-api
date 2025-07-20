@@ -9,7 +9,7 @@ export const configurePassport = (): void => {
   passport.use("jwt", jwtStrategy);
 
   // Serialize user for session (not used in JWT setup, but required by Passport)
-  passport.serializeUser((user: Express.User, done) => {
+  passport.serializeUser((user: any, done) => {
     done(null, user.id);
   });
 

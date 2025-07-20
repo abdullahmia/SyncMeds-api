@@ -1,3 +1,4 @@
+import { hashPassword } from "@/core/auth/password.service";
 import { ApiError } from "@/shared/utils/api-error.util";
 import httpStatus from "http-status";
 import * as userRepository from "./user.repository";
@@ -28,7 +29,12 @@ export const createUser = async (
     throw new ApiError(httpStatus.CONFLICT, "Already have an user!");
   }
 
-  return await userRepository.createUser(payload);
+  const hashedPassword = await hashPassword(payload.password);
+
+  return await userRepository.createUser({
+    ...payload,
+    password: hashedPassword,
+  });
 };
 
 export const updateUser = async (

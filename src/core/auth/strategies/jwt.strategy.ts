@@ -10,7 +10,7 @@ import {
 const options: StrategyOptions = {
   jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
   secretOrKey: config.jwt.secret,
-  algorithms: ["HS512"],
+  algorithms: ["HS256"],
 };
 
 export const jwtStrategy = new JwtStrategy(
