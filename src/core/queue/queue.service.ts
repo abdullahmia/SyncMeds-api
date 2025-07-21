@@ -1,15 +1,6 @@
-import { EmailJobData, EmailJobType } from "./queue.types";
-import { emailQueue } from "./queues/email.queue";
+import { Queue } from "bullmq";
+import redisClient from "../cache/redis.client";
 
-export class QueueService {
-  async addEmailJob(type: EmailJobType, payload: EmailJobData["payload"]) {
-    return emailQueue.add(type, { type, payload });
-  }
-
-  async startWorkers() {
-    // Workers are automatically initialized when imported
-    // Additional worker management can go here
-  }
-}
-
-export const queueService = new QueueService();
+export const emailQueue = new Queue("emailQueue", {
+  connection: redisClient,
+});
