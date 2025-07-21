@@ -1,11 +1,12 @@
+import * as morgan from "@/shared/utils/morgan.util";
 import compression from "compression";
 import cors from "cors";
-import dotenv from "dotenv";
 import express, { Express } from "express";
 import helmet from "helmet";
 import httpStatus from "http-status";
 import passport from "passport";
 import v1Router from "./api/v1/routes";
+import config from "./config";
 import { configurePassport } from "./core/auth/passport.config";
 import {
   errorConverter,
@@ -14,9 +15,12 @@ import {
 import { rateLimiter } from "./core/middleware/rate-limit.middleware";
 import { ApiError } from "./shared/utils/api-error.util";
 
-dotenv.config();
-
 const app: Express = express();
+
+if (config.env !== "test") {
+  app.use(morgan.successHandler);
+  app.use(morgan.errorHandler);
+}
 
 configurePassport();
 

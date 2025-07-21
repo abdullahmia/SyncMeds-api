@@ -44,6 +44,8 @@ export const getUserByEmail = async (email: string): Promise<User | null> => {
       select: {
         ...selectUserProperty,
         password: true,
+        otp: true,
+        otpExpires: true,
       },
     });
     return user;

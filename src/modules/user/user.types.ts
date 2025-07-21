@@ -1,6 +1,6 @@
 import { User } from "@/generated/prisma";
 
-export type PublicUser = Omit<User, "password">;
+export type PublicUser = Omit<User, "password" | "otp" | "otpExpires">;
 
 export type CreateUserPayload = {
   name: string;

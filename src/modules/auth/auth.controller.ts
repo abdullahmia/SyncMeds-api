@@ -6,7 +6,11 @@ import * as authService from "./auth.service";
 
 export const login = async (req: Request, res: Response) => {
   const result = await authService.userLogin(req.user as UserPayload);
-
+  // await emailQueue.add("welcome email", {
+  //   name: req.user?.name,
+  //   email: req.user?.email,
+  //   id: req.user?.id,
+  // });
   return res
     .status(httpStatus.OK)
     .send(response(httpStatus.OK, "Login successful", result));

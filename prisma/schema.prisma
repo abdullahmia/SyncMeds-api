@@ -35,6 +35,8 @@ model User {
   updated_at DateTime   @updatedAt
   Sale       Sale[]
   Settings   Settings[]
+  otp String? @map("otp")
+  otpExpires DateTime? @map("otp_expires")
 
   @@map("users")
 }
