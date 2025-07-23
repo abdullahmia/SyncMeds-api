@@ -1,4 +1,5 @@
 import { hashPassword } from "@/core/auth/password.service";
+import { User } from "@/generated/prisma";
 import { ApiError } from "@/shared/utils/api-error.util";
 import httpStatus from "http-status";
 import * as userRepository from "./user.repository";
@@ -48,4 +49,11 @@ export const updateUser = async (
 export const deleteUser = async (id: string): Promise<PublicUser> => {
   const user = await userRepository.deleteUser(id);
   return user;
+};
+
+export const addOtpToUser = async (
+  userId: string,
+  payload: { otp: string }
+): Promise<Omit<User, "password">> => {
+  return await userRepository.addOtp(userId, payload);
 };

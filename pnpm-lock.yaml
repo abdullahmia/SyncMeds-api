@@ -91,6 +91,9 @@ devDependencies:
   '@types/nodemailer':
     specifier: ^6.4.17
     version: 6.4.17
+  '@types/otp-generator':
+    specifier: ^4.0.2
+    version: 4.0.2
   '@types/passport':
     specifier: ^1.0.17
     version: 1.0.17
@@ -382,6 +385,10 @@ packages:
     resolution: {integrity: sha512-I9CCaIp6DTldEg7vyUTZi8+9Vo0hi1/T8gv3C89yk1rSAAzoKQ8H8ki/jBYJSFoH/BisgLP8tkZMlQ91CIquww==}
     dependencies:
       '@types/node': 24.0.15
+    dev: true
+
+  /@types/otp-generator@4.0.2:
+    resolution: {integrity: sha512-9+qqWzuFb332hXPbLgjUyOXlbcaTQkmkmqQjTduvNuOmPV5fW+iLv70JsVEhdUy0DWi4kY34++HDCaWl6N0AYg==}
     dev: true
 
   /@types/passport-jwt@4.0.1:

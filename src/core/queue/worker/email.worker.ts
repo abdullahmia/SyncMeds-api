@@ -1,13 +1,13 @@
 import redisClient from "@/core/cache/redis.client";
+import { authEmailSender } from "@/modules/shared/services/email/senders/auth.sender";
 import { QueueKeys } from "@/shared/constants/queue-keys.constants";
 import { logger } from "@/shared/utils/logger.util";
 import { Job, Worker } from "bullmq";
 
 const emailProcessor = async (job: Job) => {
-  console.log("Job Name --> ", job.name);
-
   if (job.name === QueueKeys.FORGOT_PASSWORD_EMAIL) {
-    logger.info(`Send the forgot password email with top`);
+    const { data } = job;
+    await authEmailSender.sendPasswordReset(data.email, data.otp);
   } else if (job.name === QueueKeys.INVENTORY_UPDATE) {
     logger.info(`Inventory update stuff`);
   }

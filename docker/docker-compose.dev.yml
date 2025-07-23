@@ -44,6 +44,19 @@ services:
     networks:
       - postgres
 
+  mailhog:
+    container_name: mailhog
+    image: mailhog/mailhog:latest
+    restart: unless-stopped
+    platform: linux/amd64
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    volumes:
+      - mailhog_data:/maildir
+    networks:
+      - postgres
+
 networks:
   postgres:
     driver: bridge
@@ -52,3 +65,4 @@ volumes:
   postgres_data:
   pgadmin_data:
   redis_data:
+  mailhog_data:

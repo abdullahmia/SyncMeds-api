@@ -1,4 +1,3 @@
-import config from "@/config";
 import { compileTemplate } from "@/shared/utils/template.util";
 import {
   EmailProvider,
@@ -19,7 +18,8 @@ export class EmailService {
     const html = await compileTemplate(options.template, options.context);
 
     await this.provider.sendMail({
-      from: `"${config.email.from}" <${config.email.from}>`,
+      // from: `"${config.email.from}" <${config.email.from}>`,
+      from: "no-reply@syncmeds.com",
       to: options.to,
       subject: options.subject,
       html,

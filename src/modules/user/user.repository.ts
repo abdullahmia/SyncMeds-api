@@ -115,3 +115,35 @@ export const deleteUser = async (id: string): Promise<PublicUser> => {
     throw new ApiError(500, "Failed to delete user");
   }
 };
+
+export const addOtp = async (
+  userId: string,
+  payload: { otp: string }
+): Promise<Omit<User, "password">> => {
+  try {
+    const otpExpiryTime = new Date(Date.now() + 20 * 60 * 1000); // 20 minutes in milliseconds
+
+    const user = await db.user.update({
+      where: {
+        user_id: userId,
+      },
+      data: {
+        otp: payload.otp,
+        otpExpires: otpExpiryTime.toISOString(),
+      },
+      select: {
+        ...selectUserProperty,
+        otp: true,
+        otpExpires: true,
+      },
+    });
+    return user;
+  } catch (error: unknown) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      if (error.code === "P2025") {
+        throw new ApiError(404, "User not found");
+      }
+    }
+    throw new ApiError(500, "Failed to update user");
+  }
+};

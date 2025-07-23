@@ -24,21 +24,25 @@ export class NodemailerProvider implements EmailProvider {
     this.transporter = nodemailer.createTransport({
       host: config.email.smtp.host,
       port: config.email.smtp.port,
-      secure: config.email.smtp.secure, // true for 465, false for other ports
-      auth:
-        config.env === "production"
-          ? {
-              user: config.email.smtp.auth.user,
-              pass: config.email.smtp.auth.pass,
-            }
-          : undefined,
+      secure: false,
+      auth: undefined,
       tls: {
-        rejectUnauthorized: config.env === "production",
+        rejectUnauthorized: false,
       },
+      // secure: config.email.smtp.secure,
+      // auth:
+      //   config.env === "production"
+      //     ? {
+      //         user: config.email.smtp.auth.user,
+      //         pass: config.email.smtp.auth.pass,
+      //       }
+      //     : undefined,
+      // tls: {
+      //   rejectUnauthorized: config.env === "production",
+      // },
       logger: config.env === "development",
       debug: config.env === "development",
     });
-
     this.setupEventListeners();
   }
 
@@ -56,7 +60,8 @@ export class NodemailerProvider implements EmailProvider {
     try {
       const info = await this.transporter.sendMail({
         ...options,
-        from: options.from || `"${config.email.from}" <${config.email.from}>`,
+        // from: options.from || `"${config.email.from}" <${config.email.from}>`,
+        from: options.from,
       });
 
       if (config.env === "development") {
