@@ -5,11 +5,31 @@ import { logger } from "@/shared/utils/logger.util";
 import { Job, Worker } from "bullmq";
 
 const emailProcessor = async (job: Job) => {
-  if (job.name === QueueKeys.FORGOT_PASSWORD_EMAIL) {
-    const { data } = job;
-    await authEmailSender.sendPasswordReset(data.email, data.otp);
-  } else if (job.name === QueueKeys.INVENTORY_UPDATE) {
-    logger.info(`Inventory update stuff`);
+  switch (job.name) {
+    case QueueKeys.FORGOT_PASSWORD_EMAIL:
+      const { data: forgotPasswordData } = job;
+      await authEmailSender.sendPasswordReset(
+        forgotPasswordData.email,
+        forgotPasswordData.otp
+      );
+      break;
+
+    case QueueKeys.INVENTORY_UPDATE:
+      logger.info(`Inventory update stuff`);
+      break;
+
+    case QueueKeys.RESET_PASSWORD_SUCCESS:
+      const { data: userInfo } = job;
+      logger.info(`Password Reset success for user id: ${userInfo.user_id}`);
+      await authEmailSender.sendResetPasswordSuccessful(
+        userInfo.email,
+        userInfo.name
+      );
+      break;
+
+    default:
+      logger.warn(`Unknown job name received: ${job.name}`);
+      break;
   }
 };
 

@@ -69,15 +69,16 @@ export const resetPassword = async (
     }
 
     const hashedPassword = await hashPassword(newPassword);
-
     await userService.updatePassword(user.user_id, hashedPassword);
-
     logger.info(`Password reset successful for: ${email}`);
-  } catch (error) {
+
+    await emailQueue.add(QueueKeys.RESET_PASSWORD_SUCCESS, {
+      user_id: user.user_id,
+      email: user.email,
+      name: user.name,
+    });
+  } catch (error: any) {
     logger.error("Reset password error:", error);
-    throw new ApiError(
-      httpStatus.INTERNAL_SERVER_ERROR,
-      "Internal Server Error"
-    );
+    throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
   }
 };
