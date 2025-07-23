@@ -147,3 +147,34 @@ export const addOtp = async (
     throw new ApiError(500, "Failed to update user");
   }
 };
+
+export const updatePassword = async (
+  userId: string,
+  password: string
+): Promise<Partial<User>> => {
+  try {
+    const user = await db.user.update({
+      where: {
+        user_id: userId,
+      },
+      data: {
+        password: password,
+        otp: null,
+        otpExpires: null,
+      },
+      select: {
+        user_id: true,
+        name: true,
+        email: true,
+      },
+    });
+    return user;
+  } catch (error: unknown) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      if (error.code === "P2025") {
+        throw new ApiError(404, "User not found");
+      }
+    }
+    throw new ApiError(500, "Failed to update user");
+  }
+};

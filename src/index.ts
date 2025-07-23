@@ -44,7 +44,7 @@ process.on("unhandledRejection", (reason) => {
 });
 process.on("uncaughtException", (error) => {
   logger.error("Uncaught Exception:", error);
-  gracefulShutdown();
+  // gracefulShutdown();
 });
 
 bootstrap();

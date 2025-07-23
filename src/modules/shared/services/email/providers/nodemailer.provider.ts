@@ -2,7 +2,6 @@ import config from "@/config";
 import { logger } from "@/shared/utils/logger.util";
 import nodemailer, { Transporter } from "nodemailer";
 import { SentMessageInfo } from "nodemailer/lib/smtp-transport";
-import { Token } from "nodemailer/lib/xoauth2";
 
 export interface EmailProvider {
   sendMail(options: MailOptions): Promise<SentMessageInfo>;
@@ -25,6 +24,7 @@ export class NodemailerProvider implements EmailProvider {
       host: config.email.smtp.host,
       port: config.email.smtp.port,
       secure: false,
+      ignoreTLS: true, // Explicitly ignore TLS for MailHog
       auth: undefined,
       tls: {
         rejectUnauthorized: false,
@@ -47,10 +47,6 @@ export class NodemailerProvider implements EmailProvider {
   }
 
   private setupEventListeners(): void {
-    this.transporter.on("token", (token: Token) => {
-      logger.debug(`Nodemailer OAuth token: ${token}`);
-    });
-
     this.transporter.on("error", (error: unknown) => {
       logger.error("Nodemailer transport error:", error);
     });
