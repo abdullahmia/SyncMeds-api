@@ -12,6 +12,24 @@ router
     validate(inventoryValidatorSchema.getInventoryQuerySchema),
     AuthMiddleware.authenticateJWT,
     inventoryController.getAllInventory
+  )
+  .post(
+    validate(inventoryValidatorSchema.createInventorySchema),
+    AuthMiddleware.authenticateJWT,
+    inventoryController.addInventory
+  );
+
+router
+  .route("/:id")
+  .get(
+    validate(inventoryValidatorSchema.inventoryById),
+    AuthMiddleware.authenticateJWT,
+    inventoryController.getInventory
+  )
+  .delete(
+    validate(inventoryValidatorSchema.inventoryById),
+    AuthMiddleware.authenticateJWT,
+    inventoryController.deleteInventoryId
   );
 
 export { router as inventoryRouter };

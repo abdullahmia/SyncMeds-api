@@ -35,8 +35,8 @@ model User {
   updated_at DateTime   @updatedAt
   Sale       Sale[]
   Settings   Settings[]
-  otp String? @map("otp")
-  otpExpires DateTime? @map("otp_expires")
+  otp        String?    @map("otp")
+  otpExpires DateTime?  @map("otp_expires")
 
   @@map("users")
 }
@@ -75,7 +75,7 @@ model Product {
 }
 
 model Inventory {
-  inventory_id  String          @id @default(ulid())
+  inventory_id  String          @id @default(uuid())
   product       Product         @relation(fields: [product_id], references: [product_id])
   product_id    String
   batch_number  String
@@ -88,7 +88,7 @@ model Inventory {
 }
 
 model Sale {
-  sale_id        String        @id @default(ulid())
+  sale_id        String        @id @default(uuid())
   invoice_number String
   customer       Customer      @relation(fields: [customer_id], references: [customer_id])
   customer_id    String
@@ -107,7 +107,7 @@ model Sale {
 }
 
 model SaleItem {
-  sale_item_id  String   @id @default(ulid())
+  sale_item_id  String   @id @default(uuid())
   sale          Sale     @relation(fields: [sale_id], references: [sale_id])
   sale_id       String
   product       Product  @relation(fields: [product_id], references: [product_id])
@@ -121,7 +121,7 @@ model SaleItem {
 }
 
 model Settings {
-  settings_id           String   @id @default(ulid())
+  settings_id           String   @id @default(uuid())
   pharmacy_name         String
   business_email        String
   business_address      String

@@ -14,3 +14,8 @@ export type InventoryQueryResponse = {
   data: Inventory[];
   meta: PaginationMeta;
 };
+
+export type AddInventoryPayload = Omit<
+  Inventory,
+  "inventory_id" | "created_at" | "updated_at" | "status"
+>;

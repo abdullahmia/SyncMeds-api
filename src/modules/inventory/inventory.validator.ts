@@ -13,7 +13,7 @@ const inventorySchema = Joi.object<Inventory>({
     "string.empty": "Batch number cannot be empty",
     "any.required": "Batch number is required",
   }),
-  quantity: Joi.number().min(0).required().messages({
+  quantity: Joi.number().greater(0).required().messages({
     "number.base": "Quantity must be a number",
     "number.min": "Quantity cannot be negative",
     "any.required": "Quantity is required",
@@ -23,7 +23,7 @@ const inventorySchema = Joi.object<Inventory>({
     "string.empty": "Location cannot be empty",
     "any.required": "Location is required",
   }),
-  reorder_level: Joi.number().min(0).messages({
+  reorder_level: Joi.number().greater(0).messages({
     "number.base": "Reorder level must be a number",
     "number.min": "Reorder level cannot be negative",
   }),
@@ -34,6 +34,12 @@ export const createInventorySchema = {
     ["product_id", "batch_number", "quantity", "location", "reorder_level"],
     (schema) => schema.required()
   ),
+};
+
+export const inventoryById = {
+  params: {
+    id: Joi.string().uuid().required(),
+  },
 };
 
 export const getInventoryQuerySchema = {
