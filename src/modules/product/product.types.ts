@@ -1,4 +1,5 @@
 import { Product } from "@/generated/prisma";
+import { PaginationMeta } from "@/shared/types";
 
 export type CreateProductPayload = Omit<
   Product,
@@ -15,10 +16,5 @@ export type ProductQuery = {
 
 export type ProductQueryResponse = {
   data: Product[];
-  meta: {
-    total: number;
-    page: number;
-    limit: number;
-    totalPages: number;
-  };
+  meta: PaginationMeta;
 };

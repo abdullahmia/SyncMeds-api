@@ -1,5 +1,5 @@
 import { response } from "@/shared/utils/api-response.util";
-import { NextFunction, Request, Response } from "express";
+import { Request, Response } from "express";
 import httpStatus from "http-status";
 import { UserPayload } from "../user/user.types";
 import * as authService from "./auth.service";
@@ -10,12 +10,6 @@ export const login = async (req: Request, res: Response) => {
   return res
     .status(httpStatus.OK)
     .send(response(httpStatus.OK, "Login successful", result));
-};
-
-export const asyncHandler = (fn: Function) => {
-  return (req: Request, res: Response, next: NextFunction) => {
-    Promise.resolve(fn(req, res, next)).catch(next);
-  };
 };
 
 export const forgotPassword = async (req: Request, res: Response) => {
