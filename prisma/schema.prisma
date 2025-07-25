@@ -85,10 +85,13 @@ model Inventory {
   status        InventoryStatus @default(AVAILABLE)
   created_at    DateTime        @default(now())
   updated_at    DateTime        @updatedAt
+  Sale          Sale[]
 }
 
 model Sale {
   sale_id        String        @id @default(uuid())
+  inventory      Inventory     @relation(fields: [inventory_id], references: [inventory_id])
+  inventory_id   String
   invoice_number String
   customer       Customer      @relation(fields: [customer_id], references: [customer_id])
   customer_id    String
@@ -97,7 +100,7 @@ model Sale {
   sale_date      DateTime      @default(now())
   total_amount   Decimal
   payment_method PaymentMethod @default(CASH)
-  payment_status PaymentStatus
+  payment_status PaymentStatus @default(PAID)
   notes          String
   created_at     DateTime      @default(now())
   updated_at     DateTime      @updatedAt
@@ -107,15 +110,15 @@ model Sale {
 }
 
 model SaleItem {
-  sale_item_id  String   @id @default(uuid())
-  sale          Sale     @relation(fields: [sale_id], references: [sale_id])
-  sale_id       String
-  product       Product  @relation(fields: [product_id], references: [product_id])
-  product_id    String
-  quantity_sold Int
-  unit_price    Decimal
-  total_item    Int
-  created_at    DateTime @default(now())
+  sale_item_id String   @id @default(uuid())
+  sale         Sale     @relation(fields: [sale_id], references: [sale_id])
+  sale_id      String
+  product      Product  @relation(fields: [product_id], references: [product_id])
+  product_id   String
+  quantity     Int
+  unit_price   Decimal
+  total_amount Int
+  created_at   DateTime @default(now())
 
   @@map("sale_item")
 }
