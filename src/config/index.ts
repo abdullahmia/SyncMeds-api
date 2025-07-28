@@ -23,16 +23,13 @@ const envVarsSchema = Joi.object()
     JWT_VERIFY_EMAIL_EXPIRATION_MINUTES: Joi.number()
       .default(10)
       .description("minutes after which verify email token expires"),
-    SMTP_HOST: Joi.string().description("server that will send the emails"),
-    SMTP_PORT: Joi.number().description("port to connect to the email server"),
-    // SMTP_USERNAME: Joi.string().description("username for email server"),
-    // SMTP_PASSWORD: Joi.string().description("password for email server"),
-    // EMAIL_FROM: Joi.string().description(
-    //   "the from field in the emails sent by the app"
-    // ),
-    // EMAIL_SECURE: Joi.boolean()
-    //   .default(false)
-    //   .description("Email secure option"),
+    SMTP_SERVICE: Joi.string().default("Gmail").required(),
+    SMTP_USERNAME: Joi.string().description("username for email server"),
+    SMTP_PASSWORD: Joi.string().description("password for email server"),
+    EMAIL_FROM: Joi.string().description(
+      "the from field in the emails sent by the app"
+    ),
+    REDIS_URL: Joi.string().required(),
     REDIS_PORT: Joi.number().description("Redis port").default(6379),
     REDIS_HOST: Joi.string().description("Redis host"),
     CLIENT_URL: Joi.string().description("The URL of the client app"),
@@ -61,17 +58,16 @@ export default {
   },
   email: {
     smtp: {
-      host: envVars.SMTP_HOST,
-      port: envVars.SMTP_PORT,
-      // secure: envVars.EMAIL_SECURE,
-      // auth: {
-      //   user: envVars.SMTP_USERNAME,
-      //   pass: envVars.SMTP_PASSWORD,
-      // },
+      service: envVars.SMTP_SERVICE,
+      auth: {
+        user: envVars.SMTP_USERNAME,
+        pass: envVars.SMTP_PASSWORD,
+      },
     },
-    // from: envVars.EMAIL_FROM,
+    from: envVars.EMAIL_FROM,
   },
   redis: {
+    url: envVars.REDIS_URL,
     host: envVars.REDIS_HOST,
     port: envVars.REDIS_PORT,
   },

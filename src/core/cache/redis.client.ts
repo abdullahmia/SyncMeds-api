@@ -7,7 +7,9 @@ const redisConfig = {
   maxRetriesPerRequest: null,
 };
 
-const redisClient = new Redis(redisConfig);
+const redisClient = new Redis(config.redis.url, {
+  maxRetriesPerRequest: null,
+});
 
 redisClient.on("error", (err) => console.error("Redis Client Error", err));
 

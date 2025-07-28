@@ -3,7 +3,6 @@ import { UserPayload } from "@/modules/user/user.types";
 import jwt from "jsonwebtoken";
 
 export const generateToken = (user: UserPayload): string => {
-  console.log("accessExpirationMinutes", config.jwt.accessExpirationMinutes);
   return jwt.sign(
     { id: user.id, email: user.email, name: user.name },
     config.jwt.secret,

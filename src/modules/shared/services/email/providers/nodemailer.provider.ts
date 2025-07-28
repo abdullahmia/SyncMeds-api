@@ -21,27 +21,11 @@ export class NodemailerProvider implements EmailProvider {
 
   constructor() {
     this.transporter = nodemailer.createTransport({
-      host: config.email.smtp.host,
-      port: config.email.smtp.port,
-      secure: false,
-      ignoreTLS: true, // Explicitly ignore TLS for MailHog
-      auth: undefined,
-      tls: {
-        rejectUnauthorized: false,
+      service: config.email.smtp.service,
+      auth: {
+        user: config.email.smtp.auth.user,
+        pass: config.email.smtp.auth.pass,
       },
-      // secure: config.email.smtp.secure,
-      // auth:
-      //   config.env === "production"
-      //     ? {
-      //         user: config.email.smtp.auth.user,
-      //         pass: config.email.smtp.auth.pass,
-      //       }
-      //     : undefined,
-      // tls: {
-      //   rejectUnauthorized: config.env === "production",
-      // },
-      logger: config.env === "development",
-      debug: config.env === "development",
     });
     this.setupEventListeners();
   }
@@ -56,7 +40,6 @@ export class NodemailerProvider implements EmailProvider {
     try {
       const info = await this.transporter.sendMail({
         ...options,
-        // from: options.from || `"${config.email.from}" <${config.email.from}>`,
         from: options.from,
       });
 
@@ -67,6 +50,7 @@ export class NodemailerProvider implements EmailProvider {
 
       return info;
     } catch (error) {
+      console.log("Sending email error --> ", error);
       logger.error("Failed to send email:", error);
       throw new Error(
         `Email sending failed: ${
@@ -87,10 +71,8 @@ export class NodemailerProvider implements EmailProvider {
   }
 }
 
-// Singleton instance (optional, can also use dependency injection)
 export const nodemailerProvider = new NodemailerProvider();
 
-// Verify connection on startup in production
 if (config.env === "production") {
   nodemailerProvider.verifyConnection().catch(() => {
     process.exitCode = 1;
