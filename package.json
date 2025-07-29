@@ -6,10 +6,10 @@
   "scripts": {
     "copy:prisma": "copyfiles -u 1 \"src/generated/**/*\" dist/",
     "build": "tsc && tsc-alias && cp -r src/generated dist/generated && cp -r src/modules/shared/services/email/templates dist/modules/shared/services/email/",
-    "start": "node -r tsconfig-paths/register dist/index.js",
+    "start": "NODE_ENV=production node -r tsconfig-paths/register dist/index.js",
     "start:worker": "node dist/worker.js",
     "start:prod": "concurrently \"npm run start\" \"npm run start:worker\"",
-    "dev:app": "nodemon --exec node -r tsconfig-paths/register -r ts-node/register src/index.ts",
+    "dev:app": "NODE_ENV=development nodemon --exec node -r tsconfig-paths/register -r ts-node/register src/index.ts",
     "dev:worker": "nodemon --exec node -r tsconfig-paths/register -r ts-node/register src/worker.ts",
     "dev": "concurrently \"npm run dev:app\" \"npm run dev:worker\"",
     "docker:prod:start": "docker compose -p syncmeds-api up -d",

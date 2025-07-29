@@ -2,14 +2,14 @@ import config from "@/config";
 import Redis from "ioredis";
 
 const redisConfig = {
-  port: config.redis.port,
   host: config.redis.host,
+  port: config.redis.port,
+  username: config.redis.username || undefined,
+  password: config.redis.password || undefined,
   maxRetriesPerRequest: null,
 };
 
-const redisClient = new Redis(config.redis.url, {
-  maxRetriesPerRequest: null,
-});
+const redisClient = new Redis(redisConfig);
 
 redisClient.on("error", (err) => console.error("Redis Client Error", err));
 
