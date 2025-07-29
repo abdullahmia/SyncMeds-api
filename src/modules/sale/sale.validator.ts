@@ -60,3 +60,9 @@ export const salesQuerySchema = {
       return value;
     }),
 };
+
+export const byId = {
+  params: Joi.object({
+    id: Joi.string().uuid().required(),
+  }),
+};

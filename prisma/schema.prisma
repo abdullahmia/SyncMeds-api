@@ -109,7 +109,7 @@ model Sale {
 
 model SaleItem {
   sale_item_id      String    @id @default(uuid())
-  sale              Sale      @relation(fields: [sale_id], references: [sale_id])
+  sale              Sale      @relation(fields: [sale_id], references: [sale_id], onDelete: Cascade)
   sale_id           String
   inventory         Inventory @relation(fields: [inventory_id], references: [inventory_id])
   inventory_id      String

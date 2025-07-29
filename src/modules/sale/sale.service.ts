@@ -36,3 +36,7 @@ export const getAllSaleHistory = async (
     ...query,
   });
 };
+
+export const deleteSaleById = async (id: string): Promise<Sale> => {
+  return await saleRepository.deleteSale(id);
+};

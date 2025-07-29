@@ -199,3 +199,21 @@ export const getAll = async ({
     );
   }
 };
+
+export const deleteSale = async (id: string): Promise<Sale> => {
+  try {
+    const sale = await db.sale.delete({
+      where: { sale_id: id },
+    });
+    return sale;
+  } catch (error: unknown) {
+    console.log("Error ---> ", error);
+
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      if (error.code === "P2025") {
+        throw new ApiError(404, "Sale not found");
+      }
+    }
+    throw new ApiError(500, "Failed to delete Sale");
+  }
+};

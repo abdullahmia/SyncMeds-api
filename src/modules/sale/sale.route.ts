@@ -19,4 +19,12 @@ router
     saleController.getAllSales
   );
 
+router
+  .route("/:id")
+  .delete(
+    validate(saleValidatorSchema.byId),
+    AuthMiddleware.authenticateJWT,
+    saleController.deleteSale
+  );
+
 export { router as saleRouter };

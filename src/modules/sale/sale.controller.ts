@@ -16,3 +16,10 @@ export const getAllSales = async (req: Request, res: Response) => {
     .status(httpStatus.OK)
     .send(response(httpStatus.OK, "Sale list", sales));
 };
+
+export const deleteSale = async (req: Request, res: Response) => {
+  const sale = await saleService.deleteSaleById(req.params.id);
+  return res
+    .status(httpStatus.OK)
+    .send(response(httpStatus.OK, "Sale deleted successfully", sale));
+};
