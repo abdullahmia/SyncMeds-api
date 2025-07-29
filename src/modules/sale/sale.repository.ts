@@ -207,8 +207,6 @@ export const deleteSale = async (id: string): Promise<Sale> => {
     });
     return sale;
   } catch (error: unknown) {
-    console.log("Error ---> ", error);
-
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
       if (error.code === "P2025") {
         throw new ApiError(404, "Sale not found");

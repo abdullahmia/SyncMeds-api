@@ -149,3 +149,46 @@ export const deleteById = async (id: string): Promise<Inventory> => {
     throw new ApiError(500, "Failed to delete Inventory");
   }
 };
+
+export const reduceStockQty = async (
+  id: string,
+  quantity: number
+): Promise<Inventory> => {
+  try {
+    const currentInventory = await db.inventory.findUnique({
+      where: { inventory_id: id },
+      select: { quantity: true, reorder_level: true },
+    });
+
+    if (!currentInventory) {
+      throw new ApiError(404, "Inventory not found");
+    }
+
+    const newQuantity = currentInventory.quantity - quantity;
+
+    // Determine status based on new quantity
+    let status: InventoryStatus;
+    if (newQuantity <= 0) {
+      status = InventoryStatus.OUT_OF_STOCK;
+    } else if (newQuantity <= currentInventory.reorder_level) {
+      status = InventoryStatus.LOW_STOCK;
+    } else {
+      status = InventoryStatus.AVAILABLE;
+    }
+
+    return await db.inventory.update({
+      where: { inventory_id: id },
+      data: {
+        quantity: newQuantity,
+        status: status,
+      },
+    });
+  } catch (error: unknown) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      if (error.code === "P2025") {
+        throw new ApiError(404, "Inventory not found");
+      }
+    }
+    throw new ApiError(500, "Failed to update inventory");
+  }
+};

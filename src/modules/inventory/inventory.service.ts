@@ -42,3 +42,10 @@ export const addInventory = async (
 export const deleteInventory = async (id: string): Promise<Inventory> => {
   return await inventoryRepository.deleteById(id);
 };
+
+export const reduceInventoryStockQty = async (
+  id: string,
+  quantity: number
+): Promise<Inventory> => {
+  return await inventoryRepository.reduceStockQty(id, quantity);
+};
