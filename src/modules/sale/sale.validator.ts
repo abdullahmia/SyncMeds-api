@@ -1,32 +1,7 @@
-// export const createSaleSchema = Joi.object({
-//   inventory_id: Joi.string().uuid().required(),
-//   invoice_number: Joi.string().required(),
-//   customer_id: Joi.string().uuid().required(),
-//   user_id: Joi.string().uuid().optional(),
-//   sale_date: Joi.date().optional(),
-//   total_amount: Joi.number().precision(2).required(),
-//   payment_method: Joi.string()
-//     .valid("CASH", "CARD", "BANK_TRANSFER")
-//     .optional(),
-//   payment_status: Joi.string().valid("PAID", "UNPAID").optional(),
-//   notes: Joi.string().allow("", null).optional(),
-//   items: Joi.array()
-//     .items(
-//       Joi.object({
-//         product_id: Joi.string().uuid().required(),
-//         quantity_sold: Joi.number().integer().min(1).required(),
-//         unit_price: Joi.number().precision(2).required(),
-//       })
-//     )
-//     .min(1)
-//     .required(),
-// });
-
 import { PaymentMethod, PaymentStatus } from "@/generated/prisma";
 import Joi from "joi";
 
 const saleSchema = Joi.object({
-  inventory_id: Joi.string().uuid(),
   invoice_number: Joi.string(),
   customer_id: Joi.string().uuid(),
   user_id: Joi.string().uuid(),
@@ -35,9 +10,8 @@ const saleSchema = Joi.object({
   notes: Joi.string().allow("", null).optional(),
   items: Joi.array().items(
     Joi.object({
-      product_id: Joi.string().uuid(),
+      inventory_id: Joi.string().uuid(),
       quantity: Joi.number().greater(0).min(1),
-      unit_price: Joi.number().precision(2),
     })
   ),
 });
@@ -45,7 +19,6 @@ const saleSchema = Joi.object({
 export const createSaleSchema = {
   body: saleSchema.fork(
     [
-      "inventory_id",
       "invoice_number",
       "customer_id",
       "user_id",
@@ -55,4 +28,35 @@ export const createSaleSchema = {
     ],
     (schema) => schema.required()
   ),
+};
+
+export const salesQuerySchema = {
+  query: Joi.object({
+    page: Joi.number()
+      .default(1)
+      .custom((value) => Number(value)),
+    limit: Joi.number()
+      .default(10)
+      .custom((value) => Number(value)),
+    search: Joi.string().allow("").optional(),
+    order_by: Joi.string()
+      .valid("sale_date", "total_amount", "invoice_number", "created_at")
+      .default("created_at"),
+    order: Joi.string().valid("ASC", "DESC").default("DESC"),
+    start_date: Joi.string().isoDate().optional(),
+    end_date: Joi.string().isoDate().optional(),
+  })
+    .unknown(false)
+    .custom((value, helpers) => {
+      if (value.start_date && value.end_date) {
+        const start = new Date(value.start_date);
+        const end = new Date(value.end_date);
+        if (start > end) {
+          return helpers.error("any.invalid", {
+            message: "start_date must be before end_date",
+          });
+        }
+      }
+      return value;
+    }),
 };

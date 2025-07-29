@@ -11,7 +11,7 @@ export const addSale = async (req: Request, res: Response) => {
 };
 
 export const getAllSales = async (req: Request, res: Response) => {
-  const sales = await saleService.getAllSaleHistory();
+  const sales = await saleService.getAllSaleHistory(req.query);
   return res
     .status(httpStatus.OK)
     .send(response(httpStatus.OK, "Sale list", sales));

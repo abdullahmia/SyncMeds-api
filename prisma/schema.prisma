@@ -85,13 +85,11 @@ model Inventory {
   status        InventoryStatus @default(AVAILABLE)
   created_at    DateTime        @default(now())
   updated_at    DateTime        @updatedAt
-  Sale          Sale[]
+  SaleItem      SaleItem[]
 }
 
 model Sale {
   sale_id        String        @id @default(uuid())
-  inventory      Inventory     @relation(fields: [inventory_id], references: [inventory_id])
-  inventory_id   String
   invoice_number String
   customer       Customer      @relation(fields: [customer_id], references: [customer_id])
   customer_id    String
@@ -104,21 +102,23 @@ model Sale {
   notes          String
   created_at     DateTime      @default(now())
   updated_at     DateTime      @updatedAt
-  SaleItem       SaleItem[]
+  sale_item      SaleItem[]
 
   @@map("sales")
 }
 
 model SaleItem {
-  sale_item_id String   @id @default(uuid())
-  sale         Sale     @relation(fields: [sale_id], references: [sale_id])
-  sale_id      String
-  product      Product  @relation(fields: [product_id], references: [product_id])
-  product_id   String
-  quantity     Int
-  unit_price   Decimal
-  total_amount Int
-  created_at   DateTime @default(now())
+  sale_item_id      String    @id @default(uuid())
+  sale              Sale      @relation(fields: [sale_id], references: [sale_id])
+  sale_id           String
+  inventory         Inventory @relation(fields: [inventory_id], references: [inventory_id])
+  inventory_id      String
+  quantity          Int
+  unit_price        Decimal
+  total_amount      Int
+  created_at        DateTime  @default(now())
+  Product           Product?  @relation(fields: [productProduct_id], references: [product_id])
+  productProduct_id String?
 
   @@map("sale_item")
 }

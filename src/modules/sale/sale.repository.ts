@@ -1,15 +1,58 @@
 import { db } from "@/core/database/prisma.client";
-import { Sale } from "@/generated/prisma";
-import { CreateSalePayload } from "./sale.types";
+import { Prisma, Sale } from "@/generated/prisma";
+import { ApiError } from "@/shared/utils/api-error.util";
+import httpStatus from "http-status";
+import { CreateSalePayload, SaleQuery, SalesResponse } from "./sale.types";
 
-export const create = async (
-  payload: CreateSalePayload,
-  totalAmount: number
-): Promise<Sale> => {
+export const create = async (payload: CreateSalePayload): Promise<Sale> => {
   return await db.$transaction(async (tx) => {
-    return tx.sale.create({
+    const inventoryItems = await tx.inventory.findMany({
+      where: {
+        inventory_id: {
+          in: payload.items.map((item) => item.inventory_id),
+        },
+      },
+      include: { product: true },
+    });
+
+    if (inventoryItems.length !== payload.items.length) {
+      throw new Error("Some inventory items do not exist.");
+    }
+
+    let totalAmount: number = 0;
+    const saleItemData = [];
+
+    for (const requestItem of payload.items) {
+      const inventoryItem = inventoryItems.find(
+        (inv) => inv.inventory_id === requestItem.inventory_id
+      );
+
+      if (!inventoryItem) {
+        throw new Error(
+          `Inventory item with ID ${requestItem.inventory_id} not found.`
+        );
+      }
+
+      if (inventoryItem.quantity < requestItem.quantity) {
+        throw new Error(
+          `Insufficient inventory! Available: ${inventoryItem.quantity}, Requested: ${requestItem.quantity}`
+        );
+      }
+
+      const unitPrice = inventoryItem.product.selling_price || 0;
+      const itemTotal = Number(unitPrice) * requestItem.quantity;
+      totalAmount += itemTotal;
+
+      saleItemData.push({
+        inventory_id: requestItem.inventory_id,
+        quantity: requestItem.quantity,
+        unit_price: unitPrice,
+        total_amount: itemTotal,
+      });
+    }
+
+    const sale = await tx.sale.create({
       data: {
-        inventory_id: payload.inventory_id,
         customer_id: payload.customer_id,
         user_id: payload.user_id,
         invoice_number: payload.invoice_number,
@@ -17,42 +60,142 @@ export const create = async (
         payment_status: payload.payment_status,
         notes: payload.notes || "",
         total_amount: totalAmount,
-        SaleItem: {
-          create: payload.items.map((item) => ({
-            product_id: item.product_id,
-            quantity: item.quantity,
-            unit_price: item.unit_price,
-            total_amount: Number(item.unit_price) * item.quantity,
-          })),
+        sale_item: {
+          create: saleItemData,
         },
       },
-      include: {
-        SaleItem: false,
-      },
     });
+
+    return sale;
   });
 };
 
-export const getAll = async (): Promise<Sale[]> => {
-  return db.sale.findMany({
-    include: {
-      customer: {
-        select: {
-          customer_id: true,
-          name: true,
-        },
-      },
-      SaleItem: {
-        select: {
-          quantity: true,
-          product: {
-            select: {
-              product_name: true,
-              sku: true,
+export const getAll = async ({
+  page = 1,
+  limit = 10,
+  order_by = "created_at",
+  order = "DESC",
+  search,
+  startDate,
+  endDate,
+}: SaleQuery): Promise<SalesResponse> => {
+  try {
+    const whereClauses: Prisma.SaleWhereInput = {
+      AND: [],
+    };
+
+    // date filtering
+    if (startDate || endDate) {
+      const dateFilter: any = {};
+      if (startDate) {
+        dateFilter.gte = new Date(startDate);
+      }
+
+      if (endDate) {
+        const endDateObj = new Date(endDate);
+        endDateObj.setHours(23, 59, 59, 999); // set to end of the day
+        dateFilter.lte = endDateObj;
+      }
+
+      (whereClauses.AND as Prisma.SaleWhereInput[]).push({
+        sale_date: dateFilter,
+      });
+    }
+
+    // search across all relevant fields
+    if (search && search.trim()) {
+      (whereClauses.AND as Prisma.SaleWhereInput[]).push({
+        OR: [
+          {
+            invoice_number: {
+              contains: search.trim(),
+              mode: "insensitive",
+            },
+          },
+          {
+            customer: {
+              phone: {
+                contains: search.trim(),
+                mode: "insensitive",
+              },
+            },
+          },
+          {
+            sale_item: {
+              some: {
+                inventory: {
+                  product: {
+                    product_name: {
+                      contains: search.trim(),
+                      mode: "insensitive",
+                    },
+                  },
+                },
+              },
+            },
+          },
+        ],
+      });
+    }
+
+    // Remove empty AND array if no conditions
+    if ((whereClauses.AND as Prisma.SaleWhereInput[]).length === 0) {
+      delete whereClauses.AND;
+    }
+
+    const skip = (page - 1) * limit;
+
+    const orderBy: Prisma.SaleOrderByWithRelationInput = {
+      [order_by]: order.toLowerCase() as "asc" | "desc",
+    };
+
+    const total = await db.sale.count({
+      where: whereClauses,
+    });
+
+    const sales = await db.sale.findMany({
+      where: whereClauses,
+      orderBy,
+      skip,
+      take: Number(limit),
+      include: {
+        customer: { select: { customer_id: true, name: true } },
+        user: { select: { user_id: true, name: true } },
+        sale_item: {
+          select: {
+            quantity: true,
+            inventory: {
+              select: {
+                product: {
+                  select: {
+                    product_id: true,
+                    product_name: true,
+                    sku: true,
+                  },
+                },
+              },
             },
           },
         },
       },
-    },
-  });
+    });
+
+    const totalPages = Math.ceil(total / limit);
+
+    return {
+      data: sales,
+      meta: {
+        total,
+        totalPages,
+        page,
+        limit,
+      },
+    };
+  } catch (error) {
+    console.error("Error fetching sales:", error);
+    throw new ApiError(
+      httpStatus.INTERNAL_SERVER_ERROR,
+      "Internal Server error"
+    );
+  }
 };

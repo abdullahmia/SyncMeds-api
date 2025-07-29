@@ -8,15 +8,6 @@ const envVarsSchema = Joi.object()
   .keys({
     NODE_ENV: Joi.string().valid("production", "development").required(),
     PORT: Joi.number().default(8000),
-
-    // Development Environment Variables
-    DEVELOPMENT_DATABASE_URL: Joi.string()
-      .when("NODE_ENV", {
-        is: "development",
-        then: Joi.required(),
-        otherwise: Joi.optional(),
-      })
-      .description("Development Postgres database url"),
     DEVELOPMENT_JWT_SECRET: Joi.string()
       .when("NODE_ENV", {
         is: "development",
@@ -74,14 +65,6 @@ const envVarsSchema = Joi.object()
       })
       .description("Development client URL"),
 
-    // Production Environment Variables
-    PRODUCTION_DATABASE_URL: Joi.string()
-      .when("NODE_ENV", {
-        is: "production",
-        then: Joi.required(),
-        otherwise: Joi.optional(),
-      })
-      .description("Production Postgres database url"),
     PRODUCTION_JWT_SECRET: Joi.string()
       .when("NODE_ENV", {
         is: "production",

@@ -1,7 +1,6 @@
-import { PaymentMethod, PaymentStatus } from "@/generated/prisma";
+import { PaymentMethod, PaymentStatus, Sale } from "@/generated/prisma";
 
 export type CreateSalePayload = {
-  inventory_id: string;
   invoice_number: string;
   customer_id: string;
   user_id: string;
@@ -9,8 +8,27 @@ export type CreateSalePayload = {
   payment_status: PaymentStatus;
   notes?: string | null;
   items: {
-    product_id: string;
+    inventory_id: string;
     quantity: number;
-    unit_price: number;
   }[];
+};
+
+export type SaleQuery = {
+  search?: string;
+  startDate?: Date | string;
+  endDate?: Date | string;
+  page?: number;
+  limit?: number;
+  order_by?: "sale_date" | "total_amount" | "invoice_number" | "created_at";
+  order?: "ASC" | "DESC";
+};
+
+export type SalesResponse = {
+  data: Sale[];
+  meta: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
 };

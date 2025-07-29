@@ -13,6 +13,10 @@ router
     AuthMiddleware.authenticateJWT,
     saleController.addSale
   )
-  .get(AuthMiddleware.authenticateJWT, saleController.getAllSales);
+  .get(
+    validate(saleValidatorSchema.salesQuerySchema),
+    AuthMiddleware.authenticateJWT,
+    saleController.getAllSales
+  );
 
 export { router as saleRouter };
