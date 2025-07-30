@@ -258,7 +258,7 @@ export const getInvoice = async (saleId: string): Promise<InvoiceData> => {
       totalPrice: formatCurrency(Number(item.total_amount)),
     })),
     subtotal: formatCurrency(Number(sale.total_amount)),
-    grandTotal: formatCurrency(Number(sale.total_amount) * 1.1),
+    grandTotal: formatCurrency(Number(sale.total_amount)),
     year: new Date().getFullYear(),
   };
 };
