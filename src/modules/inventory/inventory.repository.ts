@@ -150,45 +150,40 @@ export const deleteById = async (id: string): Promise<Inventory> => {
   }
 };
 
-export const reduceStockQty = async (
-  id: string,
-  quantity: number
-): Promise<Inventory> => {
-  try {
-    const currentInventory = await db.inventory.findUnique({
-      where: { inventory_id: id },
-      select: { quantity: true, reorder_level: true },
+export const updateInventoryOnSale = async (
+  id: string
+): Promise<Inventory[]> => {
+  return await db.$transaction(async (tx) => {
+    const saleItems = await tx.saleItem.findMany({
+      where: { sale_id: id },
     });
 
-    if (!currentInventory) {
-      throw new ApiError(404, "Inventory not found");
+    if (saleItems.length === 0) {
+      throw new Error("No sale items found for this sale");
     }
 
-    const newQuantity = currentInventory.quantity - quantity;
-
-    // Determine status based on new quantity
-    let status: InventoryStatus;
-    if (newQuantity <= 0) {
-      status = InventoryStatus.OUT_OF_STOCK;
-    } else if (newQuantity <= currentInventory.reorder_level) {
-      status = InventoryStatus.LOW_STOCK;
-    } else {
-      status = InventoryStatus.AVAILABLE;
-    }
-
-    return await db.inventory.update({
-      where: { inventory_id: id },
-      data: {
-        quantity: newQuantity,
-        status: status,
-      },
+    const updateOperations = saleItems.map(({ inventory_id, quantity }) => {
+      return tx.inventory.update({
+        where: { inventory_id },
+        data: {
+          quantity: {
+            decrement: quantity,
+          },
+        },
+      });
     });
-  } catch (error: unknown) {
-    if (error instanceof Prisma.PrismaClientKnownRequestError) {
-      if (error.code === "P2025") {
-        throw new ApiError(404, "Inventory not found");
-      }
+
+    const updateInventories = await Promise.all(updateOperations);
+
+    const negativeInventories = updateInventories.filter(
+      (inventory) => inventory.quantity < 0
+    );
+    if (negativeInventories.length > 0) {
+      throw new ApiError(
+        httpStatus.BAD_REQUEST,
+        "Insufficient stock for one or more items"
+      );
     }
-    throw new ApiError(500, "Failed to update inventory");
-  }
+    return updateInventories;
+  });
 };

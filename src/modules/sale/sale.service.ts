@@ -1,3 +1,4 @@
+import { eventBus } from "@/events/event-bus";
 import { Sale } from "@/generated/prisma";
 import { customerService } from "@/modules/customer";
 import { inventoryService } from "@/modules/inventory";
@@ -21,7 +22,7 @@ export const addSale = async (payload: CreateSalePayload): Promise<Sale> => {
   const sale = await saleRepository.create(payload);
 
   if (sale) {
-    // TODO: Add a event emitter to handle post-sale actions
+    eventBus.emit("sale:created", sale);
   }
 
   return sale;

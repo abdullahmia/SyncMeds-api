@@ -22,6 +22,9 @@ if (config.env !== "test") {
   app.use(morgan.errorHandler);
 }
 
+// Initialize Event Emitter
+import "./events";
+
 configurePassport();
 
 app.use(helmet());
