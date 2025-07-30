@@ -1,7 +1,6 @@
 import { PaymentMethod, PaymentStatus, Sale } from "@/generated/prisma";
 
 export type CreateSalePayload = {
-  invoice_number: string;
   customer_id: string;
   user_id: string;
   payment_method: PaymentMethod;

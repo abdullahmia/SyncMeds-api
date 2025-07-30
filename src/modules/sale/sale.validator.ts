@@ -2,7 +2,6 @@ import { PaymentMethod, PaymentStatus } from "@/generated/prisma";
 import Joi from "joi";
 
 const saleSchema = Joi.object({
-  invoice_number: Joi.string(),
   customer_id: Joi.string().uuid(),
   user_id: Joi.string().uuid(),
   payment_method: Joi.string().valid(...Object.values(PaymentMethod)),
@@ -18,14 +17,7 @@ const saleSchema = Joi.object({
 
 export const createSaleSchema = {
   body: saleSchema.fork(
-    [
-      "invoice_number",
-      "customer_id",
-      "user_id",
-      "payment_method",
-      "payment_status",
-      "items",
-    ],
+    ["customer_id", "user_id", "payment_method", "payment_status", "items"],
     (schema) => schema.required()
   ),
 };

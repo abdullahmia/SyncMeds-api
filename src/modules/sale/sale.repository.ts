@@ -3,6 +3,7 @@ import { Prisma, Sale } from "@/generated/prisma";
 import { ApiError } from "@/shared/utils/api-error.util";
 import { formatCurrency } from "@/shared/utils/currency.util";
 import { formatDate } from "@/shared/utils/date.util";
+import { generateRandomInvoiceNumber } from "@/shared/utils/inventory.util";
 import httpStatus from "http-status";
 import {
   CreateSalePayload,
@@ -62,7 +63,7 @@ export const create = async (payload: CreateSalePayload): Promise<Sale> => {
       data: {
         customer_id: payload.customer_id,
         user_id: payload.user_id,
-        invoice_number: payload.invoice_number,
+        invoice_number: generateRandomInvoiceNumber(),
         payment_method: payload.payment_method,
         payment_status: payload.payment_status,
         notes: payload.notes || "",
