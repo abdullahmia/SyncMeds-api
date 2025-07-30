@@ -27,11 +27,33 @@ const inventorySchema = Joi.object<Inventory>({
     "number.base": "Reorder level must be a number",
     "number.min": "Reorder level cannot be negative",
   }),
+  expiry_date: Joi.date()
+    .messages({
+      "date.base": "Expiry date must be a valid date",
+    })
+    .custom((value, helpers) => {
+      if (value && new Date(value) < new Date()) {
+        return helpers.error("any.invalid", {
+          message: "Expiry date cannot be in the past",
+        });
+      }
+      return value;
+    }, "custom date validation")
+    .messages({
+      "any.invalid": "Expiry date cannot be in the past",
+    }),
 });
 
 export const createInventorySchema = {
   body: inventorySchema.fork(
-    ["product_id", "batch_number", "quantity", "location", "reorder_level"],
+    [
+      "product_id",
+      "batch_number",
+      "quantity",
+      "location",
+      "reorder_level",
+      "expiry_date",
+    ],
     (schema) => schema.required()
   ),
 };

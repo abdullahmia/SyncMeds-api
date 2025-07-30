@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Inventory" ADD COLUMN     "expiry_date" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP;

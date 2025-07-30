@@ -30,3 +30,10 @@ export const deleteInventoryId = async (req: Request, res: Response) => {
     .status(httpStatus.OK)
     .send(response(httpStatus.OK, "Inventory has been deleted", inventory));
 };
+
+export const getInventorySummary = async (req: Request, res: Response) => {
+  const summary = await inventoryService.getSummaries();
+  return res
+    .status(httpStatus.OK)
+    .send(response(httpStatus.OK, "Inventory summary", summary));
+};

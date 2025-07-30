@@ -102,7 +102,6 @@ export const add = async (payload: AddInventoryPayload): Promise<Inventory> => {
             ? InventoryStatus.LOW_STOCK
             : InventoryStatus.AVAILABLE,
       },
-      include: { product: true },
     });
 
     return inventory;
@@ -186,4 +185,58 @@ export const updateInventoryOnSale = async (
     }
     return updateInventories;
   });
+};
+
+export const inventorySummary = async () => {
+  try {
+    const currentDate = new Date();
+    const soonDate = new Date();
+    soonDate.setDate(currentDate.getDate() + 30);
+
+    const lowItemsQuery = db.inventory.count({
+      where: {
+        OR: [
+          { status: "LOW_STOCK" },
+          {
+            AND: [
+              { status: "AVAILABLE" },
+              { quantity: { lte: db.inventory.fields.reorder_level } },
+            ],
+          },
+        ],
+      },
+    });
+
+    const expireSoonQuery = db.inventory.count({
+      where: {
+        expiry_date: {
+          gte: currentDate,
+          lte: soonDate,
+        },
+      },
+    });
+
+    const outOfSockQuery = db.inventory.count({
+      where: {
+        OR: [{ status: "OUT_OF_STOCK" }, { quantity: 0 }],
+      },
+    });
+
+    const [lowItems, expiringSoon, outOfStock] = await Promise.all([
+      lowItemsQuery,
+      expireSoonQuery,
+      outOfSockQuery,
+    ]);
+
+    return {
+      low_items: lowItems,
+      expiring_soon: expiringSoon,
+      out_of_stock: outOfStock,
+    };
+  } catch (error) {
+    throw new ApiError(
+      httpStatus.INTERNAL_SERVER_ERROR,
+      "Internal Server error"
+    );
+  }
 };

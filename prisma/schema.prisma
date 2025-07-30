@@ -83,6 +83,7 @@ model Inventory {
   location      String
   reorder_level Int
   status        InventoryStatus @default(AVAILABLE)
+  expiry_date   DateTime        @default(now())
   created_at    DateTime        @default(now())
   updated_at    DateTime        @updatedAt
   SaleItem      SaleItem[]

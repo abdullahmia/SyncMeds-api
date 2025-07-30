@@ -19,6 +19,12 @@ router
     inventoryController.addInventory
   );
 
+router.get(
+  "/summary",
+  AuthMiddleware.authenticateJWT,
+  inventoryController.getInventorySummary
+);
+
 router
   .route("/:id")
   .get(

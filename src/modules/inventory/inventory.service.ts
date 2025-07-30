@@ -48,3 +48,7 @@ export const updateInventoryOnSale = async (
 ): Promise<Inventory[]> => {
   return await inventoryRepository.updateInventoryOnSale(saleId);
 };
+
+export const getSummaries = async () => {
+  return await inventoryRepository.inventorySummary();
+};
