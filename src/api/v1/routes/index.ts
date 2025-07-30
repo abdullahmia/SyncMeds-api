@@ -1,3 +1,4 @@
+import { analyticsRouter } from "@/modules/analytics/analytics.route";
 import { authRouter } from "@/modules/auth/auth.route";
 import { customerRouter } from "@/modules/customer";
 import { inventoryRouter } from "@/modules/inventory";
@@ -16,5 +17,6 @@ router.use("/products", productRouter);
 router.use("/inventory", inventoryRouter);
 router.use("/sales", saleRouter);
 router.use("/settings", settingsRouter);
+router.use("/analytics", analyticsRouter);
 
 export default router;
