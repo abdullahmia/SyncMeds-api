@@ -4,7 +4,12 @@ import { customerService } from "@/modules/customer";
 import { inventoryService } from "@/modules/inventory";
 import { userService } from "@/modules/user";
 import * as saleRepository from "./sale.repository";
-import { CreateSalePayload, SaleQuery, SalesResponse } from "./sale.types";
+import {
+  CreateSalePayload,
+  InvoiceData,
+  SaleQuery,
+  SalesResponse,
+} from "./sale.types";
 
 export const addSale = async (payload: CreateSalePayload): Promise<Sale> => {
   const { customer_id, user_id, items } = payload;
@@ -40,4 +45,8 @@ export const getAllSaleHistory = async (
 
 export const deleteSaleById = async (id: string): Promise<Sale> => {
   return await saleRepository.deleteSale(id);
+};
+
+export const getSaleInvoice = async (saleId: string): Promise<InvoiceData> => {
+  return await saleRepository.getInvoice(saleId);
 };

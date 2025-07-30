@@ -1,8 +1,15 @@
 import { db } from "@/core/database/prisma.client";
 import { Prisma, Sale } from "@/generated/prisma";
 import { ApiError } from "@/shared/utils/api-error.util";
+import { formatCurrency } from "@/shared/utils/currency.util";
+import { formatDate } from "@/shared/utils/date.util";
 import httpStatus from "http-status";
-import { CreateSalePayload, SaleQuery, SalesResponse } from "./sale.types";
+import {
+  CreateSalePayload,
+  InvoiceData,
+  SaleQuery,
+  SalesResponse,
+} from "./sale.types";
 
 export const create = async (payload: CreateSalePayload): Promise<Sale> => {
   return await db.$transaction(async (tx) => {
@@ -214,4 +221,44 @@ export const deleteSale = async (id: string): Promise<Sale> => {
     }
     throw new ApiError(500, "Failed to delete Sale");
   }
+};
+
+export const getInvoice = async (saleId: string): Promise<InvoiceData> => {
+  const sale = await db.sale.findUnique({
+    where: { sale_id: saleId },
+    include: {
+      customer: true,
+      sale_item: {
+        include: {
+          inventory: {
+            include: {
+              product: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  if (!sale) {
+    throw new Error(`Sale with ID ${saleId} not found`);
+  }
+
+  return {
+    invoiceNumber: sale.invoice_number,
+    customerName: sale.customer.name,
+    customerEmail: sale.customer.email,
+    issueDate: formatDate(sale.sale_date),
+    status: sale.payment_status === "PAID" ? "Paid" : "Unpaid",
+    paymentMethod: sale.payment_method,
+    items: sale.sale_item.map((item) => ({
+      name: item.inventory.product.product_name,
+      quantity: item.quantity,
+      unitPrice: formatCurrency(Number(item.unit_price)),
+      totalPrice: formatCurrency(Number(item.total_amount)),
+    })),
+    subtotal: formatCurrency(Number(sale.total_amount)),
+    grandTotal: formatCurrency(Number(sale.total_amount) * 1.1),
+    year: new Date().getFullYear(),
+  };
 };

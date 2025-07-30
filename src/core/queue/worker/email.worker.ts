@@ -1,5 +1,6 @@
 import redisClient from "@/core/cache/redis.client";
 import { authEmailSender } from "@/modules/shared/services/email/senders/auth.sender";
+import { saleEmailSender } from "@/modules/shared/services/email/senders/sale.sender";
 import { QueueKeys } from "@/shared/constants/queue-keys.constants";
 import { logger } from "@/shared/utils/logger.util";
 import { Job, Worker } from "bullmq";
@@ -12,6 +13,10 @@ const emailProcessor = async (job: Job) => {
         forgotPasswordData.email,
         forgotPasswordData.otp
       );
+      break;
+
+    case QueueKeys.SALE_INVOICE_PAYMENT:
+      await saleEmailSender.sendInvoiceToCustomer(job.data as string);
       break;
 
     case QueueKeys.INVENTORY_UPDATE:

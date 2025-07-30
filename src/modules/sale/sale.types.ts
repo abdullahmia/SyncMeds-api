@@ -32,3 +32,23 @@ export type SalesResponse = {
     totalPages: number;
   };
 };
+
+interface InvoiceItem {
+  name: string;
+  quantity: number;
+  unitPrice: string;
+  totalPrice: string;
+}
+
+export interface InvoiceData {
+  invoiceNumber: string;
+  customerName: string;
+  customerEmail: string;
+  issueDate: string;
+  status: "Paid" | "Unpaid";
+  paymentMethod: string;
+  items: InvoiceItem[];
+  subtotal: string;
+  grandTotal: string;
+  year: number;
+}
