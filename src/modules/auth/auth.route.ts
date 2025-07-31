@@ -6,7 +6,12 @@ import * as authValidationSchema from "./auth.validator";
 
 const router: Router = Router();
 
-router.post("/login", AuthMiddleware.authenticateLocal, authController.login);
+router.post(
+  "/login",
+  validate(authValidationSchema.loginSchema),
+  AuthMiddleware.authenticateLocal,
+  authController.login
+);
 router.post(
   "/forgot-password",
   validate(authValidationSchema.forgotPasswordSchema),

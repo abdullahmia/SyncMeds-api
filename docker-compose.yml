@@ -3,7 +3,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: abdullahmia/syncmeds-api:latest
+    # container_name: abdullahmia/syncmeds-api:latest
+    container_name: syncmeds-api
     restart: unless-stopped
     ports:
       - "8000:8000"
@@ -11,18 +12,20 @@ services:
       - NODE_ENV=production
       - PORT=8000
       - DATABASE_URL=${DATABASE_URL}
-      - JWT_SECRET=${JWT_SECRET}
-      - JWT_ACCESS_EXPIRATION_MINUTES=${JWT_ACCESS_EXPIRATION_MINUTES}
-      - JWT_REFRESH_EXPIRATION_DAYS=${JWT_REFRESH_EXPIRATION_DAYS}
-      - JWT_RESET_PASSWORD_EXPIRATION_MINUTES=${JWT_RESET_PASSWORD_EXPIRATION_MINUTES}
-      - JWT_VERIFY_EMAIL_EXPIRATION_MINUTES=${JWT_VERIFY_EMAIL_EXPIRATION_MINUTES}
-      - SMTP_SERVICE=${SMTP_SERVICE}
-      - SMTP_USERNAME=${SMTP_USERNAME}
-      - SMTP_PASSWORD=${SMTP_PASSWORD}
-      - EMAIL_FROM=${EMAIL_FROM}
+      - JWT_SECRET=${PRODUCTION_JWT_SECRET}
+      - JWT_ACCESS_EXPIRATION_MINUTES=${PRODUCTION_JWT_ACCESS_EXPIRATION_MINUTES}
+      - REFRESH_EXPIRATION_DAYS=${PRODUCTION_JWT_REFRESH_EXPIRATION_DAYS}
+      - JWT_RESET_PASSWORD_EXPIRATION_MINUTES=${PRODUCTION_JWT_RESET_PASSWORD_EXPIRATION_MINUTES}
+      - JWT_VERIFY_EMAIL_EXPIRATION_MINUTES=${PRODUCTION_JWT_VERIFY_EMAIL_EXPIRATION_MINUTES}
+      - SMTP_SERVICE=${PRODUCTION_SMTP_SERVICE}
+      - SMTP_USERNAME=${PRODUCTION_SMTP_USERNAME}
+      - SMTP_PASSWORD=${PRODUCTION_SMTP_PASSWORD}
+      - EMAIL_FROM=${PRODUCTION_EMAIL_FROM}
       - REDIS_HOST=redis
       - REDIS_PORT=6379
-      - CLIENT_URL=${CLIENT_URL}
+      - REDIS_USERNAME=default
+      - REDIS_PASSWORD=${PRODUCTION_REDIS_PASSWORD}
+      - CLIENT_URL=${PRODUCTION_CLIENT_URL}
     depends_on:
       - redis
     networks:
@@ -33,8 +36,8 @@ services:
     image: redis/redis-stack:latest
     restart: unless-stopped
     ports:
-      - "6379:6379" # Redis port
-      - "8001:8001" # RedisInsight port
+      - "6379:6379"
+      - "8001:8001"
     volumes:
       - redis_data:/data
     networks:

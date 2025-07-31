@@ -14,6 +14,13 @@ export class CacheService {
     await redisClient.del(key);
   }
 
+  async delPattern(pattern: string): Promise<void> {
+    const keys = await redisClient.keys(pattern);
+    if (keys.length > 0) {
+      await redisClient.del(...keys);
+    }
+  }
+
   async keys(pattern: string): Promise<string[]> {
     return redisClient.keys(pattern);
   }

@@ -1,20 +1,23 @@
 import Joi from "joi";
 
+export const loginSchema = {
+  body: Joi.object({
+    email: Joi.string().email().required().messages({
+      "string.email": "Email must be a valid email address",
+      "any.required": "Email is required",
+    }),
+    password: Joi.string().min(8).required().messages({
+      "string.min": "Password must be at least 8 characters long",
+      "any.required": "Password is required",
+    }),
+  }),
+};
+
 export const forgotPasswordSchema = {
   body: {
     email: Joi.string().email().required(),
   },
 };
-
-// export const resetPasswordSchema = {
-//   body: {
-//     email: Joi.string().email().required(),
-//     otp: Joi.string().max(6).required().message("Otp should be valid!"),
-//     newPassword: Joi.string()
-//       .min(8)
-//       .message("Password should have at least 8 characters"),
-//   },
-// };
 
 export const resetPasswordSchema = {
   body: {

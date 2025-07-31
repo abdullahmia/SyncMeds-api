@@ -51,7 +51,7 @@ export const createProduct = async (
   payload: CreateProductPayload
 ): Promise<Product> => {
   const product = await productRepository.create(payload);
-  cacheService.del("products:*"); // TODO: Resolve invalidate all products cache.
+  cacheService.delPattern("products:*");
   return product;
 };
 
