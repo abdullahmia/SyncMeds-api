@@ -1,3 +1,5 @@
 import { InventoryListener } from "./listeners/inventory.listener";
 
-new InventoryListener();
+export const initEventListeners = () => {
+  new InventoryListener();
+};

@@ -13,6 +13,7 @@ import {
   errorHandler,
 } from "./core/middleware/error.middleware";
 import { rateLimiter } from "./core/middleware/rate-limit.middleware";
+import { initEventListeners } from "./events";
 import { ApiError } from "./shared/utils/api-error.util";
 
 const app: Express = express();
@@ -23,7 +24,7 @@ if (config.env !== "test") {
 }
 
 // Initialize Event Emitter
-import "./events";
+initEventListeners();
 
 configurePassport();
 

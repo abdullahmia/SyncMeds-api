@@ -7,6 +7,7 @@ const redisConfig = {
   username: config.redis.username || undefined,
   password: config.redis.password || undefined,
   maxRetriesPerRequest: null,
+  tls: {},
 };
 
 const redisClient = new Redis(redisConfig);

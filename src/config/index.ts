@@ -107,8 +107,11 @@ const envVarsSchema = Joi.object()
         otherwise: Joi.optional(),
       })
       .description("Production email from address"),
-    PRODUCTION_REDIS_HOST: Joi.string().description("Production Redis host"),
+    PRODUCTION_REDIS_HOST: Joi.string()
+      .required()
+      .description("Production Redis host"),
     PRODUCTION_REDIS_PORT: Joi.number()
+      .required()
       .default(6379)
       .description("Production Redis port"),
     PRODUCTION_REDIS_USERNAME: Joi.string().required(),
