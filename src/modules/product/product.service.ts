@@ -41,9 +41,8 @@ export const getProductById = async (id: string): Promise<Product | null> => {
   }
 
   const product = await productRepository.byId(id);
-  cacheService.set(cacheKey, product, 3600);
   if (!product) throw new ApiError(httpStatus.NOT_FOUND, "Product not found");
-
+  await cacheService.set(cacheKey, product, 3600);
   return product;
 };
 
@@ -51,7 +50,7 @@ export const createProduct = async (
   payload: CreateProductPayload
 ): Promise<Product> => {
   const product = await productRepository.create(payload);
-  cacheService.delPattern("products:*");
+  await cacheService.delPattern("products:*");
   return product;
 };
 
@@ -60,12 +59,12 @@ export const updateProduct = async (
   payload: UpdateProductPayload
 ): Promise<Product | null> => {
   const updatedProduct = await productRepository.update(id, payload);
-  cacheService.del(`products:${id}`);
+  await cacheService.delPattern("products:*");
   return updatedProduct;
 };
 
 export const deleteProduct = async (id: string): Promise<Product> => {
   const deletedProduct = await productRepository.deleteProduct(id);
-  cacheService.del(`products:${id}`);
+  await cacheService.delPattern("products:*");
   return deletedProduct;
 };
